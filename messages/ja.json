@@ -127,6 +127,12 @@
     "wouldPracticeAgain": "また練習したい",
     "enoughForToday": "今日はここまで"
   },
+  "reflection": {
+    "placeholder": "何でも書いてください — 短くても大丈夫です。",
+    "send": "送信",
+    "error": "エラーが発生しました。もう一度お試しください。",
+    "preparing": "セッションを準備しています..."
+  },
   "crisis": {
     "heading": "誰かと話す必要がある場合：",
     "resources": [

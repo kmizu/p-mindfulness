@@ -127,6 +127,12 @@
     "wouldPracticeAgain": "Would practice again",
     "enoughForToday": "Enough for today"
   },
+  "reflection": {
+    "placeholder": "Write anything — or just a few words.",
+    "send": "Send",
+    "error": "Something went wrong. Please try again.",
+    "preparing": "Preparing your session..."
+  },
   "crisis": {
     "heading": "If you need to talk to someone:",
     "resources": [

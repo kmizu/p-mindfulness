@@ -1,5 +1,5 @@
 import { initDb } from './connection';
-import { sessions } from './schema';
+import { sessions, userMemory as userMemoryTable } from './schema';
 import { desc, eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import type {
@@ -12,6 +12,7 @@ import type {
   GuidanceMode,
   RiskLevel,
   HarmfulPattern,
+  UserMemory,
 } from '@/lib/types';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -50,6 +51,8 @@ function rowToSession(row: typeof sessions.$inferSelect): SessionRecord {
         }
       : undefined,
     summary: row.summary ?? undefined,
+    reflectionProfile: row.reflectionProfile ?? undefined,
+    reflectionSummary: row.reflectionSummary ?? undefined,
   };
 }
 
@@ -59,6 +62,8 @@ export async function saveSession(data: {
   checkin: CheckinData;
   supervisorDecision: SupervisorDecision;
   guidance: GuidanceScript;
+  reflectionProfile?: string;
+  reflectionSummary?: string;
 }): Promise<string> {
   const db = await initDb();
   const id = randomUUID();
@@ -82,6 +87,8 @@ export async function saveSession(data: {
     guidanceMode: data.guidance.mode,
     guidanceText: data.guidance.text,
     guidanceIsPreset: data.guidance.isPreset,
+    reflectionProfile: data.reflectionProfile ?? null,
+    reflectionSummary: data.reflectionSummary ?? null,
   });
 
   return id;
@@ -121,6 +128,32 @@ export async function getSessionById(id: string): Promise<SessionRecord | null> 
   const rows = await db.select().from(sessions).where(eq(sessions.id, id)).limit(1);
   return rows.length > 0 ? rowToSession(rows[0]) : null;
 }
+
+// ── User Memory ──────────────────────────────────────────────────────────────
+
+export async function getUserMemory(userId = 'default'): Promise<UserMemory | null> {
+  const db = await initDb();
+  const rows = await db.select().from(userMemoryTable).where(eq(userMemoryTable.userId, userId)).limit(1);
+  if (rows.length === 0) return null;
+  try {
+    return JSON.parse(rows[0].memory) as UserMemory;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveUserMemory(memory: UserMemory, userId = 'default'): Promise<void> {
+  const db = await initDb();
+  await db
+    .insert(userMemoryTable)
+    .values({ userId, memory: JSON.stringify(memory), updatedAt: new Date().toISOString() })
+    .onConflictDoUpdate({
+      target: userMemoryTable.userId,
+      set: { memory: JSON.stringify(memory), updatedAt: new Date().toISOString() },
+    });
+}
+
+// ── Personalization Hints ─────────────────────────────────────────────────────
 
 export async function getPersonalizationHints(): Promise<PersonalizationHints> {
   const recent = await getRecentSessions(10);

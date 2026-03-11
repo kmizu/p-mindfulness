@@ -16,6 +16,25 @@ export function getLLMClient(): OpenAI {
   return _client;
 }
 
+export async function completeChat(
+  system: string,
+  messages: ReadonlyArray<{ role: 'user' | 'assistant'; content: string }>,
+  maxTokens = 512
+): Promise<string> {
+  const client = getLLMClient();
+  const response = await client.chat.completions.create({
+    model: 'gpt-5.4',
+    max_tokens: maxTokens,
+    messages: [
+      { role: 'system', content: system },
+      ...messages,
+    ],
+  });
+  const text = response.choices[0]?.message?.content;
+  if (!text) throw new Error('Unexpected LLM response');
+  return text;
+}
+
 export async function complete(system: string, userMessage: string, maxTokens = 512): Promise<string> {
   const client = getLLMClient();
   const response = await client.chat.completions.create({

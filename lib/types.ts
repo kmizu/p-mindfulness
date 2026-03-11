@@ -76,6 +76,8 @@ export interface SessionRecord {
   readonly guidance: GuidanceScript;
   readonly postOutcome?: PostOutcome;
   readonly summary?: string;
+  readonly reflectionProfile?: string;
+  readonly reflectionSummary?: string;
 }
 
 export interface PersonalizationHints {
@@ -93,3 +95,7 @@ export interface ApiResponse<T> {
   readonly data?: T;
   readonly error?: string;
 }
+
+// Re-export agent types
+export type { ConversationMessage, ReflectionProfile, SessionPlan, UserMemory } from '@/lib/agents/types';
+export { EMPTY_MEMORY } from '@/lib/agents/types';

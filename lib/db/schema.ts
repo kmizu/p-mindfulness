@@ -32,4 +32,14 @@ export const sessions = sqliteTable('sessions', {
 
   // Summary (generated after post-reflection)
   summary: text('summary'),
+
+  // Reflection Agent data (nullable — older sessions won't have this)
+  reflectionProfile: text('reflection_profile'),   // JSON: ReflectionProfile
+  reflectionSummary: text('reflection_summary'),
+});
+
+export const userMemory = sqliteTable('user_memory', {
+  userId: text('user_id').primaryKey(),             // always 'default' for single-user
+  memory: text('memory').notNull(),                 // JSON: UserMemory
+  updatedAt: text('updated_at').notNull(),
 });

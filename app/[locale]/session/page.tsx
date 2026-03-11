@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSessionMachine } from '@/hooks/useSessionMachine';
-import { CheckinForm } from '@/components/CheckinForm';
+import { ReflectionChat } from '@/components/ReflectionChat';
 import { SupervisorReview } from '@/components/SupervisorReview';
 import { GuidancePlayer } from '@/components/GuidancePlayer';
 import { PostReflection } from '@/components/PostReflection';
 import { Link } from '@/i18n/navigation';
+import type { ReflectionProfile } from '@/lib/types';
 
 export default function SessionPage() {
   const t = useTranslations('session');
@@ -15,7 +16,7 @@ export default function SessionPage() {
 
   const {
     state,
-    submitCheckin,
+    personalize,
     startSession,
     reportWorse,
     endSession,
@@ -25,19 +26,26 @@ export default function SessionPage() {
 
   const [loading, setLoading] = useState(false);
 
-  const withLoading = <T,>(fn: () => Promise<T>) => {
-    return async () => {
-      setLoading(true);
-      try {
-        await fn();
-      } finally {
-        setLoading(false);
-      }
-    };
+  const withLoading = <T,>(fn: () => Promise<T>) => async () => {
+    setLoading(true);
+    try {
+      await fn();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReflectionDone = async (profile: ReflectionProfile) => {
+    setLoading(true);
+    try {
+      await personalize(profile);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const stepKeys = ['checkin', 'review', 'practice', 'reflect'] as const;
-  const stepOrder = ['checkin', 'review', 'session', 'post', 'done'];
+  const stepOrder = ['reflecting', 'review', 'session', 'post', 'done'];
 
   return (
     <div className="space-y-8">
@@ -48,7 +56,10 @@ export default function SessionPage() {
           const done = currentIdx > i;
           const active = stepOrder[i] === state.step;
           return (
-            <span key={key} className={`${active ? 'text-stone-700' : done ? 'text-stone-400' : 'text-stone-200'}`}>
+            <span
+              key={key}
+              className={`${active ? 'text-stone-700' : done ? 'text-stone-400' : 'text-stone-200'}`}
+            >
               {i > 0 && <span className="mr-2">·</span>}
               {t(`steps.${key}`)}
             </span>
@@ -56,26 +67,27 @@ export default function SessionPage() {
         })}
       </div>
 
-      {state.step === 'checkin' && (
-        <CheckinForm
+      {state.step === 'reflecting' && (
+        <ReflectionChat
+          locale={locale}
+          onDone={handleReflectionDone}
           loading={loading}
-          onSubmit={async (checkin) => {
-            setLoading(true);
-            try {
-              await submitCheckin(checkin);
-            } finally {
-              setLoading(false);
-            }
-          }}
         />
       )}
 
       {state.step === 'review' && (
         <SupervisorReview
           decision={state.decision}
-          checkin={state.checkin}
+          checkin={{
+            mood: state.profile.mood,
+            tension: state.profile.tension,
+            selfCritical: state.profile.selfCritical,
+            intent: state.profile.intent,
+            lastSessionOutcome: state.profile.lastSessionOutcome,
+            freeText: state.profile.freeText,
+          }}
           loading={loading}
-          onStart={withLoading(() => startSession(state.decision, state.checkin))}
+          onStart={withLoading(() => startSession(state.decision, state.profile))}
           onDecline={() => reset()}
         />
       )}
@@ -84,10 +96,17 @@ export default function SessionPage() {
         <GuidancePlayer
           guidance={state.guidance}
           decision={state.decision}
-          checkin={state.checkin}
+          checkin={{
+            mood: state.profile.mood,
+            tension: state.profile.tension,
+            selfCritical: state.profile.selfCritical,
+            intent: state.profile.intent,
+            lastSessionOutcome: state.profile.lastSessionOutcome,
+            freeText: state.profile.freeText,
+          }}
           onEnd={endSession}
           onWorse={async (report) => {
-            await reportWorse(report, state.checkin);
+            await reportWorse(report, state.profile);
           }}
         />
       )}

@@ -29,7 +29,6 @@ export function getDb() {
 // Initialize DB schema inline (no migration files needed for local MVP)
 export async function initDb() {
   const db = getDb();
-  // Drizzle with libsql handles schema via push, but we can also ensure table exists
   try {
     await db.run(`
       CREATE TABLE IF NOT EXISTS sessions (
@@ -57,8 +56,28 @@ export async function initDb() {
       )
     `);
   } catch (e) {
-    // Table may already exist
-    console.warn('DB init warning:', e);
+    console.warn('DB sessions init warning:', e);
   }
+
+  // Add reflection columns (may already exist on pre-existing DBs — ignore errors)
+  for (const col of [
+    'ALTER TABLE sessions ADD COLUMN reflection_profile TEXT',
+    'ALTER TABLE sessions ADD COLUMN reflection_summary TEXT',
+  ]) {
+    try { await db.run(col); } catch { /* column exists */ }
+  }
+
+  try {
+    await db.run(`
+      CREATE TABLE IF NOT EXISTS user_memory (
+        user_id TEXT PRIMARY KEY,
+        memory TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    `);
+  } catch (e) {
+    console.warn('DB user_memory init warning:', e);
+  }
+
   return db;
 }
