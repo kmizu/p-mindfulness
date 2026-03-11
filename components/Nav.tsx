@@ -16,21 +16,32 @@ export function Nav() {
   };
 
   return (
-    <nav className="border-b border-stone-100">
-      <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="text-sm text-stone-600 hover:text-stone-900 transition-colors">
+    <nav style={{ borderBottom: '1px solid #e8e1d8' }}>
+      <div className="max-w-xl mx-auto px-6 py-5 flex items-center justify-between">
+        <Link
+          href="/"
+          className="font-display"
+          style={{ fontSize: '1.15rem', fontWeight: 400, color: 'var(--ink)', letterSpacing: '0.06em', textDecoration: 'none', opacity: 0.85 }}
+        >
           {t('brand')}
         </Link>
-        <div className="flex gap-6 items-center">
-          <Link href="/session" className="text-sm text-stone-500 hover:text-stone-700 transition-colors">
+
+        <div className="flex gap-8 items-center">
+          <Link
+            href="/session"
+            style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', letterSpacing: '0.08em', textDecoration: 'none', textTransform: 'uppercase' }}
+          >
             {t('session')}
           </Link>
-          <Link href="/history" className="text-sm text-stone-500 hover:text-stone-700 transition-colors">
+          <Link
+            href="/history"
+            style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', letterSpacing: '0.08em', textDecoration: 'none', textTransform: 'uppercase' }}
+          >
             {t('history')}
           </Link>
           <button
             onClick={switchLocale}
-            className="text-xs text-stone-400 hover:text-stone-600 border border-stone-200 rounded px-2 py-1 transition-colors"
+            style={{ fontSize: '0.7rem', color: 'var(--ink-soft)', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.06em', padding: '2px 0', opacity: 0.7 }}
           >
             {t('switchLocale')}
           </button>

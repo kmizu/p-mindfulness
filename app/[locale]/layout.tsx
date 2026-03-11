@@ -1,14 +1,23 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Cormorant_Garamond, Noto_Sans_JP } from "next/font/google";
 import "../globals.css";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { Nav } from '@/components/Nav';
 
-const geist = Geist({
-  variable: "--font-geist",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
+  weight: ["300", "400", "600"],
+  display: "swap",
+});
+
+const notoSans = Noto_Sans_JP({
+  variable: "--font-noto",
+  subsets: ["latin"],
+  weight: ["300", "400"],
+  display: "swap",
 });
 
 export function generateStaticParams() {
@@ -20,7 +29,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const t = await getTranslations({ locale, namespace: 'nav' });
   return {
     title: t('brand'),
-    description: 'A supervision-first mindfulness app — not a teacher, a safety monitor.',
+    description: locale === 'ja'
+      ? 'あなたのマインドフルネスをそっとそばで見守るパートナー'
+      : 'A gentle companion for mindful practice',
   };
 }
 
@@ -36,10 +47,10 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
-      <body className={`${geist.variable} font-sans antialiased`} style={{ backgroundColor: '#faf7f2', color: '#3d3530' }}>
+      <body className={`${cormorant.variable} ${notoSans.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>
           <Nav />
-          <main className="max-w-2xl mx-auto px-6 py-12">
+          <main className="max-w-xl mx-auto px-6 py-16">
             {children}
           </main>
         </NextIntlClientProvider>
