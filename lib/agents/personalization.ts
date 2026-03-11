@@ -1,5 +1,5 @@
-import type { ReflectionProfile, SessionPlan, UserMemory } from './types';
-import type { PersonalizationHints, HarmfulPattern, RiskLevel } from '@/lib/types';
+import type { ReflectionProfile, SessionPlan, UserMemory, GuidanceLevel } from './types';
+import type { PersonalizationHints, HarmfulPattern, RiskLevel, GuidanceMode, GuidanceDuration, SessionIntent } from '@/lib/types';
 import { detectCrisis, detectPatternsFromText, assessRisk } from '@/lib/supervisor/rules';
 import { applySafetyLayers } from '@/lib/supervisor/safety';
 import { isLLMConfigured, complete } from '@/lib/llm/client';
@@ -8,6 +8,19 @@ import { buildPersonalizationPrompt } from '@/prompts/personalization';
 const RISK_ORDER: RiskLevel[] = ['none', 'low', 'moderate', 'high', 'crisis'];
 const maxRisk = (a: RiskLevel, b: RiskLevel): RiskLevel =>
   RISK_ORDER.indexOf(a) >= RISK_ORDER.indexOf(b) ? a : b;
+
+const VALID_MODES: GuidanceMode[] = ['breath', 'body', 'sound', 'external', 'reset', 'abort'];
+const VALID_DURATIONS: GuidanceDuration[] = [30, 60, 180];
+const VALID_INTENTS: SessionIntent[] = ['calming', 'grounding', 'checkin'];
+const VALID_GUIDANCE_LEVELS: GuidanceLevel[] = ['minimal', 'moderate', 'detailed'];
+
+function defaultGuidanceLevel(profile: ReflectionProfile, sessionCount: number): GuidanceLevel {
+  if (sessionCount <= 2) return 'detailed';
+  if (profile.tension >= 4) return 'detailed';
+  if (profile.emotionalTone === 'distressed') return 'moderate';
+  if (sessionCount >= 10) return 'minimal';
+  return 'moderate';
+}
 
 export async function produceSessionPlan(
   profile: ReflectionProfile,
@@ -19,7 +32,7 @@ export async function produceSessionPlan(
 
   // Defense-in-depth crisis check
   if (textToCheck && detectCrisis(textToCheck)) {
-    return crisisPlan(locale);
+    return crisisPlan(profile, locale);
   }
 
   // Rule-based pattern detection
@@ -37,6 +50,13 @@ export async function produceSessionPlan(
   let finalRiskLevel = ruleRiskLevel;
   let reflectionSummary = profile.freeText ? profile.freeText.slice(0, 120) : '';
   let guidanceHints: string[] = [];
+  const sessionCount = memory?.sessionCount ?? 0;
+  let guidanceLevel: GuidanceLevel = defaultGuidanceLevel(profile, sessionCount);
+  let practiceHistorySummary = '';
+  // LLM may override safety's recommendedMode / guidanceDuration
+  let llmMode: GuidanceMode | undefined;
+  let llmDuration: GuidanceDuration | undefined;
+  let llmGoal: SessionIntent | undefined;
 
   const shouldUseLLM =
     isLLMConfigured() &&
@@ -54,6 +74,11 @@ export async function produceSessionPlan(
         finalRiskLevel = maxRisk(ruleRiskLevel, parsed.riskLevel ?? ruleRiskLevel);
         reflectionSummary = parsed.reflectionSummary ?? reflectionSummary;
         guidanceHints = parsed.guidanceHints ?? [];
+        practiceHistorySummary = parsed.practiceHistorySummary ?? '';
+        if (VALID_GUIDANCE_LEVELS.includes(parsed.guidanceLevel)) guidanceLevel = parsed.guidanceLevel;
+        if (VALID_MODES.includes(parsed.recommendedMode)) llmMode = parsed.recommendedMode;
+        if (VALID_DURATIONS.includes(parsed.guidanceDuration)) llmDuration = parsed.guidanceDuration;
+        if (VALID_INTENTS.includes(parsed.goal)) llmGoal = parsed.goal;
       }
     } catch (err) {
       console.error('[personalization] LLM failed, using rule-based:', err);
@@ -71,15 +96,20 @@ export async function produceSessionPlan(
     riskLevel: finalRiskLevel,
     patterns: finalPatterns,
     action: safety.action,
-    recommendedMode: safety.recommendedMode,
+    // LLM personalization overrides safety defaults when risk permits
+    recommendedMode: safety.action === 'proceed' ? (llmMode ?? safety.recommendedMode) : safety.recommendedMode,
+    guidanceDuration: safety.action === 'proceed' ? (llmDuration ?? safety.guidanceDuration) : safety.guidanceDuration,
     message: safety.message,
-    guidanceDuration: safety.guidanceDuration,
+    mood: profile.mood,
+    goal: llmGoal ?? profile.intent,
+    guidanceLevel,
+    practiceHistorySummary,
     reflectionSummary,
     guidanceHints,
   };
 }
 
-function crisisPlan(locale: string): SessionPlan {
+function crisisPlan(profile: ReflectionProfile, locale: string): SessionPlan {
   const message = locale === 'ja'
     ? 'このアプリは今あなたが経験していることに対する適切なサポートではありません。信頼できる人や危機相談窓口に連絡してください。'
     : "This app is not the right support for what you're going through right now. Please reach out to someone you trust or a crisis line.";
@@ -89,6 +119,10 @@ function crisisPlan(locale: string): SessionPlan {
     action: 'crisis',
     recommendedMode: 'abort',
     guidanceDuration: 30,
+    mood: profile.mood,
+    goal: profile.intent,
+    guidanceLevel: 'detailed',
+    practiceHistorySummary: '',
     message,
     reflectionSummary: '',
     guidanceHints: [],

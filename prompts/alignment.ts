@@ -14,11 +14,18 @@ export function buildAlignmentPrompt(
     ? `\nPersonalization context:\n${plan.guidanceHints.map(h => `- ${h}`).join('\n')}\n`
     : '';
 
+  const verbosityNote = plan.guidanceLevel === 'detailed'
+    ? 'Guidance level: DETAILED — more words, step-by-step, supportive scaffolding. Good for high anxiety or new practitioners.'
+    : plan.guidanceLevel === 'minimal'
+    ? 'Guidance level: MINIMAL — spare, open-ended, give space. Few words. The experienced practitioner prefers quiet.'
+    : 'Guidance level: MODERATE — clear and grounded, not overwhelming.';
+
   return `Write a ${durationDesc} mindfulness guidance script.
 
 Mode: ${mode} (${getModeDescription(mode)})
 Risk level: ${plan.riskLevel}
 State summary: ${plan.reflectionSummary}
+${verbosityNote}
 ${hintsSection}
 Style rules (non-negotiable):
 - Write in ${lang}

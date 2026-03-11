@@ -135,6 +135,10 @@ async function updateMemoryAfterSession(
     message: session.supervisorDecision.message,
     reflectionSummary: session.reflectionSummary ?? '',
     guidanceHints: [],
+    mood: profile.mood,
+    goal: profile.intent,
+    guidanceLevel: 'moderate',
+    practiceHistorySummary: '',
   };
 
   const updated = await updateUserMemory(currentMemory, profile, plan, postOutcome, locale);

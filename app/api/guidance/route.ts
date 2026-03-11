@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { generateGuidance } from '@/lib/guidance/generator';
 import { generateAlignedGuidance } from '@/lib/agents/alignment';
-import type { SessionPlan } from '@/lib/types';
+import type { SessionPlan } from '@/lib/agents/types';
 
 const PlanSchema = z.object({
   riskLevel: z.string(),
@@ -13,6 +13,10 @@ const PlanSchema = z.object({
   message: z.string(),
   reflectionSummary: z.string(),
   guidanceHints: z.array(z.string()),
+  mood: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]).optional().default(3),
+  goal: z.enum(['calming', 'grounding', 'checkin']).optional().default('checkin'),
+  guidanceLevel: z.enum(['minimal', 'moderate', 'detailed']).optional().default('moderate'),
+  practiceHistorySummary: z.string().optional().default(''),
 });
 
 const GuidanceSchema = z.object({
