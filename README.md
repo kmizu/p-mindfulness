@@ -1,5 +1,7 @@
 # mindfulness-supervisor
 
+[日本語](README-ja.md)
+
 A supervision-first mindfulness app. Not a teacher — a safety monitor.
 
 The goal is not deeper meditation. The goal is to notice early when practice is becoming harmful: self-judgment, internal surveillance, forced acceptance, compulsive optimization, or performance framing.
