@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { PostOutcome } from '@/lib/types';
 
 interface PostReflectionProps {
@@ -10,6 +11,7 @@ interface PostReflectionProps {
 }
 
 export function PostReflection({ sessionId, onSubmit, loading }: PostReflectionProps) {
+  const t = useTranslations('post');
   const [feltBetter, setFeltBetter] = useState<boolean | null>(null);
   const [wouldContinue, setWouldContinue] = useState<boolean | null>(null);
   const [notes, setNotes] = useState('');
@@ -18,7 +20,7 @@ export function PostReflection({ sessionId, onSubmit, loading }: PostReflectionP
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (feltBetter === null || wouldContinue === null) {
-      setError('Please answer both questions.');
+      setError(t('requiredError'));
       return;
     }
     setError('');
@@ -29,53 +31,49 @@ export function PostReflection({ sessionId, onSubmit, loading }: PostReflectionP
         notes: notes.trim() || undefined,
       });
     } catch {
-      setError('Something went wrong. Please try again.');
+      setError(t('submitError'));
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-7 max-w-lg mx-auto">
       <div>
-        <p className="text-sm text-stone-600 mb-2">Did the practice reduce pressure or add to it?</p>
+        <p className="text-sm text-stone-600 mb-2">{t('pressureQuestion')}</p>
         <div className="flex gap-3">
           {([
-            { value: true, label: 'Reduced it' },
-            { value: false, label: 'Added to it' },
-          ] as const).map(({ value, label }) => (
+            { value: true, labelKey: 'reducedIt' as const },
+            { value: false, labelKey: 'addedToIt' as const },
+          ]).map(({ value, labelKey }) => (
             <button
               key={String(value)}
               type="button"
               onClick={() => setFeltBetter(value)}
               className={`flex-1 py-2 text-sm rounded transition-colors ${
-                feltBetter === value
-                  ? 'bg-stone-700 text-white'
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                feltBetter === value ? 'bg-stone-700 text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
               }`}
             >
-              {label}
+              {t(labelKey)}
             </button>
           ))}
         </div>
       </div>
 
       <div>
-        <p className="text-sm text-stone-600 mb-2">Would you practice again today?</p>
+        <p className="text-sm text-stone-600 mb-2">{t('continueQuestion')}</p>
         <div className="flex gap-3">
           {([
-            { value: true, label: 'Yes' },
-            { value: false, label: 'No' },
-          ] as const).map(({ value, label }) => (
+            { value: true, labelKey: 'yes' as const },
+            { value: false, labelKey: 'no' as const },
+          ]).map(({ value, labelKey }) => (
             <button
               key={String(value)}
               type="button"
               onClick={() => setWouldContinue(value)}
               className={`flex-1 py-2 text-sm rounded transition-colors ${
-                wouldContinue === value
-                  ? 'bg-stone-700 text-white'
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                wouldContinue === value ? 'bg-stone-700 text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
               }`}
             >
-              {label}
+              {t(labelKey)}
             </button>
           ))}
         </div>
@@ -83,8 +81,7 @@ export function PostReflection({ sessionId, onSubmit, loading }: PostReflectionP
 
       <div>
         <p className="text-sm text-stone-600 mb-2">
-          Anything to remember for next time?{' '}
-          <span className="text-stone-400">(optional)</span>
+          {t('notesLabel')} <span className="text-stone-400">{t('optional')}</span>
         </p>
         <textarea
           value={notes}
@@ -103,7 +100,7 @@ export function PostReflection({ sessionId, onSubmit, loading }: PostReflectionP
         disabled={loading}
         className="w-full py-3 text-sm text-white bg-stone-700 rounded hover:bg-stone-800 disabled:opacity-50 transition-colors"
       >
-        {loading ? 'Saving...' : 'Done'}
+        {loading ? t('saving') : t('done')}
       </button>
     </form>
   );

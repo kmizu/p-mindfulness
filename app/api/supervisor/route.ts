@@ -16,12 +16,13 @@ const MidSessionSchema = z.object({
     lastSessionOutcome: z.enum(['relieving', 'neutral', 'pressuring']).optional(),
     freeText: z.string().max(500).optional(),
   }),
+  locale: z.enum(['en', 'ja']).optional().default('en'),
 });
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { userReport, checkin } = MidSessionSchema.parse(body);
+    const { userReport, checkin, locale } = MidSessionSchema.parse(body);
 
     // Crisis check first
     if (detectCrisis(userReport)) {
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
     }
 
     const hints = await getPersonalizationHints();
-    const decision = await evaluateCheckin(checkin, hints, userReport);
+    const decision = await evaluateCheckin(checkin, hints, userReport, locale);
 
     return NextResponse.json({ success: true, data: { decision } });
   } catch (err) {

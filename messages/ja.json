@@ -1,0 +1,140 @@
+{
+  "nav": {
+    "brand": "マインドフルネス監督",
+    "session": "セッション",
+    "history": "履歴",
+    "switchLocale": "English"
+  },
+  "home": {
+    "title": "マインドフルネス監督",
+    "subtitle": "瞑想の先生ではありません。練習があなたにとって機能しているかを確認し、機能していないときに止めるか切り替えることを提案するモニターです。",
+    "watchesFor": "監視していること",
+    "watchItems": [
+      "頑張りすぎること",
+      "受け入れを義務にすること",
+      "休まず自分を監視すること",
+      "セッションをパフォーマンスとして扱うこと",
+      "悪化しているのに続けること"
+    ],
+    "doesNotDo": "しないこと",
+    "doesNotItems": [
+      "連続記録なし。スコアなし。実績なし。",
+      "どう感じるかの約束なし。",
+      "スピリチュアルな言葉なし。",
+      "より長く瞑想するよう促すことなし。"
+    ],
+    "startSession": "セッションを始める",
+    "llmActive": "AI監督: 有効 (OpenAI gpt-5.4)",
+    "llmInactive": "AI監督: ルールベースのみ — .env.local に OPENAI_API_KEY を追加",
+    "ttsActive": "音声: 利用可能 (ElevenLabs)",
+    "ttsInactive": "音声: テキストのみ — .env.local に ELEVENLABS_API_KEY を追加"
+  },
+  "session": {
+    "steps": {
+      "checkin": "チェックイン",
+      "review": "レビュー",
+      "practice": "練習",
+      "reflect": "振り返り"
+    },
+    "done": "セッションを記録しました。",
+    "anotherSession": "もう一度",
+    "viewHistory": "履歴を見る"
+  },
+  "checkin": {
+    "moodLabel": "今の気分はどうですか？",
+    "moodLow": "とても低い",
+    "moodHigh": "良い",
+    "tensionLabel": "体や心にどれくらいの緊張やプレッシャーを感じますか？",
+    "tensionLow": "なし",
+    "tensionHigh": "とても高い",
+    "selfCriticalLabel": "今日、自分に厳しくしていますか？",
+    "yes": "はい",
+    "no": "いいえ",
+    "intentLabel": "今、何が一番役立ちそうですか？",
+    "intentCalming": "落ち着き",
+    "intentGrounding": "グラウンディング",
+    "intentCheckin": "確認だけ",
+    "lastSessionLabel": "前回のセッションはどうでしたか？",
+    "optional": "（任意）",
+    "skip": "スキップ",
+    "relieving": "楽になった",
+    "neutral": "普通",
+    "pressuring": "プレッシャーになった",
+    "freeTextLabel": "今、他に気になることはありますか？",
+    "error": "エラーが発生しました。もう一度お試しください。",
+    "checking": "確認中...",
+    "continue": "続ける"
+  },
+  "review": {
+    "mode": "モード",
+    "duration": "時間",
+    "noticed": "検出されたパターン",
+    "begin": "始める",
+    "starting": "準備中...",
+    "notToday": "今日はやめておく",
+    "okayStop": "わかった — ここで止めます",
+    "modes": {
+      "breath": "呼吸への気づき",
+      "sound": "音への集中",
+      "body": "身体感覚への集中",
+      "external": "外部への集中",
+      "reset": "クイックリセット",
+      "abort": "安全に停止"
+    },
+    "durations": {
+      "30": "30秒",
+      "60": "1分",
+      "180": "3分"
+    }
+  },
+  "guidance": {
+    "dur30": "約30秒",
+    "dur60": "約1分",
+    "dur180": "約3分",
+    "playAudio": "音声を再生",
+    "loadingAudio": "読み込み中...",
+    "audioUnavailable": "音声再生が設定されていません。上のテキストをお読みください。",
+    "audioError": "音声を読み込めませんでした。上のテキストをお読みください。",
+    "worseBtn": "これは悪化させている",
+    "worseTitle": "何が起きていますか？",
+    "worsePlaceholder": "何でも書いてください。空白のままでも構いません。",
+    "adjustOrStop": "調整または停止",
+    "adjusting": "調整中...",
+    "cancel": "キャンセル",
+    "done": "終わった"
+  },
+  "post": {
+    "pressureQuestion": "練習はプレッシャーを減らしましたか、それとも増やしましたか？",
+    "reducedIt": "減った",
+    "addedToIt": "増えた",
+    "continueQuestion": "今日もう一度練習しますか？",
+    "yes": "はい",
+    "no": "いいえ",
+    "notesLabel": "次回のために覚えておきたいことはありますか？",
+    "optional": "（任意）",
+    "requiredError": "両方の質問に答えてください。",
+    "submitError": "エラーが発生しました。もう一度お試しください。",
+    "saving": "保存中...",
+    "done": "完了"
+  },
+  "history": {
+    "title": "セッション履歴",
+    "sessionsCount": "{count}回のセッション",
+    "noSessions": "セッションはまだありません。",
+    "whatWeNoticed": "気づいたこと",
+    "feltBetter": "楽になった",
+    "addedPressure": "プレッシャーになった",
+    "wouldPracticeAgain": "また練習したい",
+    "enoughForToday": "今日はここまで"
+  },
+  "crisis": {
+    "heading": "誰かと話す必要がある場合：",
+    "resources": [
+      "いのちの電話: 0570-783-556",
+      "よりそいホットライン: 0120-279-338",
+      "こころの健康相談統一ダイヤル: 0570-064-556",
+      "Befrienders Worldwide: befrienders.org"
+    ],
+    "notDesigned": "このアプリは危機的状況向けに設計されていません。上記の方々がいます。"
+  }
+}

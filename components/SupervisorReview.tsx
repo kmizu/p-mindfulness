@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import type { SupervisorDecision, CheckinData } from '@/lib/types';
 import { CrisisBanner } from './CrisisBanner';
 
@@ -19,33 +20,16 @@ const RISK_COLORS = {
   crisis: 'border-stone-300',
 };
 
-const MODE_LABELS: Record<string, string> = {
-  breath: 'Breath awareness',
-  sound: 'Sound anchor',
-  body: 'Body anchor',
-  external: 'External focus',
-  reset: 'Quick reset',
-  abort: 'Stop safely',
-};
+export function SupervisorReview({ decision, checkin, onStart, onDecline, loading }: SupervisorReviewProps) {
+  const t = useTranslations('review');
 
-const DURATION_LABELS: Record<number, string> = {
-  30: '30 seconds',
-  60: '1 minute',
-  180: '3 minutes',
-};
-
-export function SupervisorReview({
-  decision,
-  checkin,
-  onStart,
-  onDecline,
-  loading,
-}: SupervisorReviewProps) {
   if (decision.riskLevel === 'crisis') {
     return <CrisisBanner message={decision.message} />;
   }
 
   const borderColor = RISK_COLORS[decision.riskLevel] ?? 'border-stone-200';
+  const modeLabel = t(`modes.${decision.recommendedMode}` as Parameters<typeof t>[0], { default: decision.recommendedMode });
+  const durationLabel = t(`durations.${decision.guidanceDuration}` as Parameters<typeof t>[0], { default: String(decision.guidanceDuration) });
 
   return (
     <div className="max-w-lg mx-auto space-y-6">
@@ -55,17 +39,17 @@ export function SupervisorReview({
         {decision.action !== 'proceed' && (
           <div className="flex gap-4 text-sm text-stone-500">
             <span>
-              Mode: <span className="text-stone-700">{MODE_LABELS[decision.recommendedMode] ?? decision.recommendedMode}</span>
+              {t('mode')}: <span className="text-stone-700">{modeLabel}</span>
             </span>
             <span>
-              Duration: <span className="text-stone-700">{DURATION_LABELS[decision.guidanceDuration]}</span>
+              {t('duration')}: <span className="text-stone-700">{durationLabel}</span>
             </span>
           </div>
         )}
 
         {decision.patterns.length > 0 && (
           <div className="text-xs text-stone-400">
-            Noticed: {decision.patterns.join(', ').replace(/_/g, ' ')}
+            {t('noticed')}: {decision.patterns.join(', ').replace(/_/g, ' ')}
           </div>
         )}
       </div>
@@ -77,13 +61,13 @@ export function SupervisorReview({
             disabled={loading}
             className="flex-1 py-3 text-sm text-white bg-stone-700 rounded hover:bg-stone-800 disabled:opacity-50 transition-colors"
           >
-            {loading ? 'Starting...' : 'Begin'}
+            {loading ? t('starting') : t('begin')}
           </button>
           <button
             onClick={onDecline}
             className="px-4 py-3 text-sm text-stone-500 hover:text-stone-700 transition-colors"
           >
-            Not today
+            {t('notToday')}
           </button>
         </div>
       ) : (
@@ -91,7 +75,7 @@ export function SupervisorReview({
           onClick={onDecline}
           className="w-full py-3 text-sm text-stone-600 bg-stone-100 rounded hover:bg-stone-200 transition-colors"
         >
-          That&apos;s okay — I&apos;ll stop here
+          {t('okayStop')}
         </button>
       )}
     </div>

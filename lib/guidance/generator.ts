@@ -45,6 +45,7 @@ export async function generateGuidance(
   duration: GuidanceDuration,
   riskLevel: RiskLevel,
   supervisorMessage: string,
+  locale = 'en',
   _hints?: PersonalizationHints
 ): Promise<GuidanceScript> {
   // Always use presets for critical modes (no latency when stopping)
@@ -52,7 +53,7 @@ export async function generateGuidance(
     return {
       mode,
       duration,
-      text: getPreset(mode, duration),
+      text: getPreset(mode, duration, locale),
       isPreset: true,
     };
   }
@@ -62,15 +63,16 @@ export async function generateGuidance(
     return {
       mode,
       duration,
-      text: getPreset(mode, duration),
+      text: getPreset(mode, duration, locale),
       isPreset: true,
     };
   }
 
   try {
     const prompt = buildGuidancePrompt(mode, duration, riskLevel, supervisorMessage);
+    const lang = locale === 'ja' ? 'Japanese' : 'English';
     const raw = await complete(
-      'You write short, concrete mindfulness guidance scripts. No spiritual language. No promises.',
+      `You write short, concrete mindfulness guidance scripts in ${lang}. No spiritual language. No promises.`,
       prompt,
       400
     );
@@ -89,7 +91,7 @@ export async function generateGuidance(
         return {
           mode,
           duration,
-          text: getPreset(mode, duration),
+          text: getPreset(mode, duration, locale),
           isPreset: true,
         };
       }
@@ -101,7 +103,7 @@ export async function generateGuidance(
     return {
       mode,
       duration,
-      text: getPreset(mode, duration),
+      text: getPreset(mode, duration, locale),
       isPreset: true,
     };
   }

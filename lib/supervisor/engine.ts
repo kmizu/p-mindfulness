@@ -15,13 +15,14 @@ import { buildSupervisorPrompt } from '@/prompts/supervisor';
 export async function evaluateCheckin(
   checkin: CheckinData,
   hints: PersonalizationHints,
-  midSessionText?: string
+  midSessionText?: string,
+  locale = 'en'
 ): Promise<SupervisorDecision> {
   const textToCheck = [checkin.freeText, midSessionText].filter(Boolean).join(' ');
 
   // SAFETY FIRST: Crisis detection is synchronous, no LLM involved
   if (textToCheck && detectCrisis(textToCheck)) {
-    return crisisDecision();
+    return crisisDecision(locale);
   }
 
   // Rule-based pattern detection
@@ -49,7 +50,7 @@ export async function evaluateCheckin(
 
   if (shouldUseLLM) {
     try {
-      const llmResult = await callLLMSupervisor(checkin, allRulePatterns, hints, ruleRiskLevel, midSessionText);
+      const llmResult = await callLLMSupervisor(checkin, allRulePatterns, hints, ruleRiskLevel, midSessionText, locale);
       // Merge: union patterns, take higher risk level
       finalPatterns = [...new Set([...allRulePatterns, ...llmResult.patterns])];
       finalRiskLevel = maxRisk(ruleRiskLevel, llmResult.riskLevel);
@@ -78,9 +79,10 @@ async function callLLMSupervisor(
   rulePatterns: readonly HarmfulPattern[],
   hints: PersonalizationHints,
   ruleRiskLevel: RiskLevel,
-  midSessionText?: string
+  midSessionText?: string,
+  locale = 'en'
 ): Promise<{ riskLevel: RiskLevel; patterns: HarmfulPattern[] }> {
-  const prompt = buildSupervisorPrompt(checkin, rulePatterns, hints, ruleRiskLevel, midSessionText);
+  const prompt = buildSupervisorPrompt(checkin, rulePatterns, hints, ruleRiskLevel, midSessionText, locale);
   const raw = await complete('You are a mindfulness supervision system.', prompt, 512);
 
   const jsonMatch = raw.match(/\{[\s\S]*\}/);
@@ -101,14 +103,16 @@ function maxRisk(a: RiskLevel, b: RiskLevel): RiskLevel {
   return RISK_ORDER.indexOf(a) >= RISK_ORDER.indexOf(b) ? a : b;
 }
 
-function crisisDecision(): SupervisorDecision {
+function crisisDecision(locale = 'en'): SupervisorDecision {
+  const message = locale === 'ja'
+    ? 'このアプリは今あなたが経験していることに対する適切なサポートではありません。信頼できる人や危機相談窓口に連絡してください。一人で抱え込まないでください。'
+    : "This app is not the right support for what you're going through right now. Please reach out to someone you trust, or contact a crisis line. You don't have to handle this alone.";
   return {
     riskLevel: 'crisis',
     patterns: [],
     action: 'crisis',
     recommendedMode: 'abort',
     guidanceDuration: 30,
-    message:
-      'This app is not the right support for what you\'re going through right now. Please reach out to someone you trust, or contact a crisis line. You don\'t have to handle this alone.',
+    message,
   };
 }

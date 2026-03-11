@@ -1,8 +1,11 @@
 import { getRecentSessions, getPersonalizationHints } from '@/lib/db/queries';
 import { SessionHistory } from '@/components/SessionHistory';
+import { getTranslations } from 'next-intl/server';
 import type { SessionRecord, PersonalizationHints } from '@/lib/types';
 
 export default async function HistoryPage() {
+  const t = await getTranslations('history');
+
   let sessions: SessionRecord[] = [];
   let hints: PersonalizationHints = {
     recentPatterns: [],
@@ -26,9 +29,11 @@ export default async function HistoryPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h2 className="text-lg font-light text-stone-800">Session history</h2>
+        <h2 className="text-lg font-light text-stone-800">{t('title')}</h2>
         {hints.sessionCount > 0 && (
-          <p className="text-sm text-stone-400">{hints.sessionCount} sessions recorded</p>
+          <p className="text-sm text-stone-400">
+            {t('sessionsCount', { count: hints.sessionCount })}
+          </p>
         )}
       </div>
       <SessionHistory sessions={sessions} hints={hints} />

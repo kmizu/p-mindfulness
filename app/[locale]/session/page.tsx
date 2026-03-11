@@ -1,14 +1,18 @@
 'use client';
 
 import { useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useSessionMachine } from '@/hooks/useSessionMachine';
 import { CheckinForm } from '@/components/CheckinForm';
 import { SupervisorReview } from '@/components/SupervisorReview';
 import { GuidancePlayer } from '@/components/GuidancePlayer';
 import { PostReflection } from '@/components/PostReflection';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 export default function SessionPage() {
+  const t = useTranslations('session');
+  const locale = useLocale();
+
   const {
     state,
     submitCheckin,
@@ -17,7 +21,7 @@ export default function SessionPage() {
     endSession,
     submitPost,
     reset,
-  } = useSessionMachine();
+  } = useSessionMachine(locale);
 
   const [loading, setLoading] = useState(false);
 
@@ -32,26 +36,26 @@ export default function SessionPage() {
     };
   };
 
+  const stepKeys = ['checkin', 'review', 'practice', 'reflect'] as const;
+  const stepOrder = ['checkin', 'review', 'session', 'post', 'done'];
+
   return (
     <div className="space-y-8">
       {/* Step indicator */}
       <div className="flex gap-2 items-center text-xs text-stone-400">
-        {['checkin', 'review', 'session', 'post'].map((step, i) => {
-          const current = state.step;
-          const steps = ['checkin', 'review', 'session', 'post', 'done'];
-          const currentIdx = steps.indexOf(current);
+        {stepKeys.map((key, i) => {
+          const currentIdx = stepOrder.indexOf(state.step);
           const done = currentIdx > i;
-          const active = steps[i] === current;
+          const active = stepOrder[i] === state.step;
           return (
-            <span key={step} className={`${active ? 'text-stone-700' : done ? 'text-stone-400' : 'text-stone-200'}`}>
+            <span key={key} className={`${active ? 'text-stone-700' : done ? 'text-stone-400' : 'text-stone-200'}`}>
               {i > 0 && <span className="mr-2">·</span>}
-              {['Check in', 'Review', 'Practice', 'Reflect'][i]}
+              {t(`steps.${key}`)}
             </span>
           );
         })}
       </div>
 
-      {/* Step content */}
       {state.step === 'checkin' && (
         <CheckinForm
           loading={loading}
@@ -105,19 +109,19 @@ export default function SessionPage() {
 
       {state.step === 'done' && (
         <div className="space-y-6 max-w-lg mx-auto text-center">
-          <p className="text-stone-600">Session recorded.</p>
+          <p className="text-stone-600">{t('done')}</p>
           <div className="flex gap-4 justify-center">
             <button
               onClick={reset}
               className="px-5 py-2.5 text-sm text-white bg-stone-700 rounded hover:bg-stone-800 transition-colors"
             >
-              Another session
+              {t('anotherSession')}
             </button>
             <Link
               href="/history"
               className="px-5 py-2.5 text-sm text-stone-600 bg-stone-100 rounded hover:bg-stone-200 transition-colors"
             >
-              View history
+              {t('viewHistory')}
             </Link>
           </div>
         </div>

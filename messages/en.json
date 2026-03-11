@@ -1,0 +1,140 @@
+{
+  "nav": {
+    "brand": "Mindfulness Supervisor",
+    "session": "Session",
+    "history": "History",
+    "switchLocale": "日本語"
+  },
+  "home": {
+    "title": "Mindfulness Supervisor",
+    "subtitle": "Not a mindfulness teacher. A monitor that checks whether your practice is working for you — and suggests stopping or switching when it isn't.",
+    "watchesFor": "What it watches for",
+    "watchItems": [
+      "Trying too hard",
+      "Turning acceptance into an obligation",
+      "Monitoring yourself instead of resting",
+      "Treating the session as a performance",
+      "Continuing when it is making things worse"
+    ],
+    "doesNotDo": "What it does not do",
+    "doesNotItems": [
+      "No streaks. No scores. No achievements.",
+      "No promises about how you will feel.",
+      "No spiritual language.",
+      "No pushing you to meditate longer."
+    ],
+    "startSession": "Start a session",
+    "llmActive": "AI supervision: active (OpenAI gpt-5.4)",
+    "llmInactive": "AI supervision: rule-based only — add OPENAI_API_KEY to .env.local",
+    "ttsActive": "Voice: available (ElevenLabs)",
+    "ttsInactive": "Voice: text only — add ELEVENLABS_API_KEY to .env.local"
+  },
+  "session": {
+    "steps": {
+      "checkin": "Check in",
+      "review": "Review",
+      "practice": "Practice",
+      "reflect": "Reflect"
+    },
+    "done": "Session recorded.",
+    "anotherSession": "Another session",
+    "viewHistory": "View history"
+  },
+  "checkin": {
+    "moodLabel": "How are you feeling right now?",
+    "moodLow": "Very low",
+    "moodHigh": "Good",
+    "tensionLabel": "How much tension or pressure do you feel in your body or mind?",
+    "tensionLow": "None",
+    "tensionHigh": "Very high",
+    "selfCriticalLabel": "Are you being hard on yourself today?",
+    "yes": "Yes",
+    "no": "No",
+    "intentLabel": "What would feel most useful right now?",
+    "intentCalming": "Calming",
+    "intentGrounding": "Grounding",
+    "intentCheckin": "Just check in",
+    "lastSessionLabel": "How did your last session go?",
+    "optional": "(optional)",
+    "skip": "Skip",
+    "relieving": "Relieving",
+    "neutral": "Neutral",
+    "pressuring": "Pressuring",
+    "freeTextLabel": "Anything else on your mind right now?",
+    "error": "Something went wrong. Please try again.",
+    "checking": "Checking...",
+    "continue": "Continue"
+  },
+  "review": {
+    "mode": "Mode",
+    "duration": "Duration",
+    "noticed": "Noticed",
+    "begin": "Begin",
+    "starting": "Starting...",
+    "notToday": "Not today",
+    "okayStop": "That's okay — I'll stop here",
+    "modes": {
+      "breath": "Breath awareness",
+      "sound": "Sound anchor",
+      "body": "Body anchor",
+      "external": "External focus",
+      "reset": "Quick reset",
+      "abort": "Stop safely"
+    },
+    "durations": {
+      "30": "30 seconds",
+      "60": "1 minute",
+      "180": "3 minutes"
+    }
+  },
+  "guidance": {
+    "dur30": "~30 sec",
+    "dur60": "~1 min",
+    "dur180": "~3 min",
+    "playAudio": "Play audio",
+    "loadingAudio": "Loading audio...",
+    "audioUnavailable": "Voice playback not configured. Read the text above.",
+    "audioError": "Could not load audio. Read the text above.",
+    "worseBtn": "This is making it worse",
+    "worseTitle": "What's happening?",
+    "worsePlaceholder": "You can say anything, or just leave this blank.",
+    "adjustOrStop": "Adjust or stop",
+    "adjusting": "Adjusting...",
+    "cancel": "Cancel",
+    "done": "I'm done"
+  },
+  "post": {
+    "pressureQuestion": "Did the practice reduce pressure or add to it?",
+    "reducedIt": "Reduced it",
+    "addedToIt": "Added to it",
+    "continueQuestion": "Would you practice again today?",
+    "yes": "Yes",
+    "no": "No",
+    "notesLabel": "Anything to remember for next time?",
+    "optional": "(optional)",
+    "requiredError": "Please answer both questions.",
+    "submitError": "Something went wrong. Please try again.",
+    "saving": "Saving...",
+    "done": "Done"
+  },
+  "history": {
+    "title": "Session history",
+    "sessionsCount": "{count} sessions recorded",
+    "noSessions": "No sessions yet.",
+    "whatWeNoticed": "What we've noticed",
+    "feltBetter": "Felt better",
+    "addedPressure": "Added pressure",
+    "wouldPracticeAgain": "Would practice again",
+    "enoughForToday": "Enough for today"
+  },
+  "crisis": {
+    "heading": "If you need to talk to someone:",
+    "resources": [
+      "Crisis Text Line: Text HOME to 741741",
+      "988 Suicide & Crisis Lifeline: Call or text 988 (US)",
+      "Samaritans (UK): 116 123",
+      "Befrienders Worldwide: befrienders.org"
+    ],
+    "notDesigned": "This app is not designed for crisis situations. The people above are."
+  }
+}

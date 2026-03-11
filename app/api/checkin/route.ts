@@ -12,15 +12,16 @@ const CheckinSchema = z.object({
   intent: z.enum(['calming', 'grounding', 'checkin']),
   lastSessionOutcome: z.enum(['relieving', 'neutral', 'pressuring']).optional(),
   freeText: z.string().max(500).optional(),
+  locale: z.enum(['en', 'ja']).optional().default('en'),
 });
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const checkin = CheckinSchema.parse(body);
+    const { locale, ...checkin } = CheckinSchema.parse(body);
 
     const hints = await getPersonalizationHints();
-    const decision = await evaluateCheckin(checkin, hints);
+    const decision = await evaluateCheckin(checkin, hints, undefined, locale);
 
     return NextResponse.json({ success: true, data: { decision, hints } });
   } catch (err) {

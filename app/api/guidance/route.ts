@@ -7,14 +7,15 @@ const GuidanceSchema = z.object({
   duration: z.union([z.literal(30), z.literal(60), z.literal(180)]),
   riskLevel: z.enum(['none', 'low', 'moderate', 'high', 'crisis']),
   supervisorMessage: z.string().max(300),
+  locale: z.enum(['en', 'ja']).optional().default('en'),
 });
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { mode, duration, riskLevel, supervisorMessage } = GuidanceSchema.parse(body);
+    const { mode, duration, riskLevel, supervisorMessage, locale } = GuidanceSchema.parse(body);
 
-    const script = await generateGuidance(mode, duration, riskLevel, supervisorMessage);
+    const script = await generateGuidance(mode, duration, riskLevel, supervisorMessage, locale);
 
     return NextResponse.json({ success: true, data: { script } });
   } catch (err) {

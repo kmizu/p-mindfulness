@@ -75,14 +75,14 @@ function reducer(state: SessionStep, action: SessionAction): SessionStep {
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
-export function useSessionMachine() {
+export function useSessionMachine(locale = 'en') {
   const [state, dispatch] = useReducer(reducer, { step: 'checkin' });
 
   const submitCheckin = useCallback(async (checkin: CheckinData) => {
     const res = await fetch('/api/checkin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(checkin),
+      body: JSON.stringify({ ...checkin, locale }),
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.error);
@@ -108,6 +108,7 @@ export function useSessionMachine() {
         duration: decision.guidanceDuration,
         riskLevel: decision.riskLevel,
         supervisorMessage: decision.message,
+        locale,
       }),
     });
     const guidanceJson = await guidanceRes.json();
@@ -139,7 +140,7 @@ export function useSessionMachine() {
     const res = await fetch('/api/supervisor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userReport, checkin }),
+      body: JSON.stringify({ userReport, checkin, locale }),
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.error);
@@ -154,6 +155,7 @@ export function useSessionMachine() {
         duration: 30,
         riskLevel: newDecision.riskLevel,
         supervisorMessage: newDecision.message,
+        locale,
       }),
     });
     const guidanceJson = await guidanceRes.json();

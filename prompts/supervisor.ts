@@ -5,8 +5,12 @@ export function buildSupervisorPrompt(
   rulePatterns: readonly HarmfulPattern[],
   hints: PersonalizationHints,
   ruleRiskLevel: RiskLevel,
-  midSessionText?: string
+  midSessionText?: string,
+  locale = 'en'
 ): string {
+  const langInstruction = locale === 'ja'
+    ? 'IMPORTANT: Write the "message" field in Japanese.'
+    : 'Write the "message" field in English.';
   const HARMFUL_PATTERNS = [
     'perfectionism', 'forced_acceptance', 'overmonitoring', 'performance_framing',
     'should_language', 'compulsive_continuation', 'breath_tension',

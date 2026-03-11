@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { CheckinData, SessionIntent, LastSessionOutcome } from '@/lib/types';
 
 interface CheckinFormProps {
@@ -8,10 +9,8 @@ interface CheckinFormProps {
   loading?: boolean;
 }
 
-const MOOD_LABELS = ['Very low', 'Low', 'Neutral', 'Okay', 'Good'];
-const TENSION_LABELS = ['None', 'Mild', 'Moderate', 'High', 'Very high'];
-
 export function CheckinForm({ onSubmit, loading }: CheckinFormProps) {
+  const t = useTranslations('checkin');
   const [mood, setMood] = useState<number>(3);
   const [tension, setTension] = useState<number>(3);
   const [selfCritical, setSelfCritical] = useState<boolean>(false);
@@ -33,7 +32,7 @@ export function CheckinForm({ onSubmit, loading }: CheckinFormProps) {
         freeText: freeText.trim() || undefined,
       });
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      setError(t('error'));
       console.error(err);
     }
   };
@@ -42,7 +41,7 @@ export function CheckinForm({ onSubmit, loading }: CheckinFormProps) {
     <form onSubmit={handleSubmit} className="space-y-8 max-w-lg mx-auto">
       {/* Mood */}
       <div className="space-y-3">
-        <label className="block text-sm text-stone-600">How are you feeling right now?</label>
+        <label className="block text-sm text-stone-600">{t('moodLabel')}</label>
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map(v => (
             <button
@@ -50,9 +49,7 @@ export function CheckinForm({ onSubmit, loading }: CheckinFormProps) {
               type="button"
               onClick={() => setMood(v)}
               className={`flex-1 py-2 text-sm rounded transition-colors ${
-                mood === v
-                  ? 'bg-stone-700 text-white'
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                mood === v ? 'bg-stone-700 text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
               }`}
             >
               {v}
@@ -60,15 +57,13 @@ export function CheckinForm({ onSubmit, loading }: CheckinFormProps) {
           ))}
         </div>
         <p className="text-xs text-stone-400 text-center">
-          1 = {MOOD_LABELS[0]} · 5 = {MOOD_LABELS[4]}
+          1 = {t('moodLow')} · 5 = {t('moodHigh')}
         </p>
       </div>
 
       {/* Tension */}
       <div className="space-y-3">
-        <label className="block text-sm text-stone-600">
-          How much tension or pressure do you feel in your body or mind?
-        </label>
+        <label className="block text-sm text-stone-600">{t('tensionLabel')}</label>
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map(v => (
             <button
@@ -76,9 +71,7 @@ export function CheckinForm({ onSubmit, loading }: CheckinFormProps) {
               type="button"
               onClick={() => setTension(v)}
               className={`flex-1 py-2 text-sm rounded transition-colors ${
-                tension === v
-                  ? 'bg-stone-700 text-white'
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                tension === v ? 'bg-stone-700 text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
               }`}
             >
               {v}
@@ -86,15 +79,13 @@ export function CheckinForm({ onSubmit, loading }: CheckinFormProps) {
           ))}
         </div>
         <p className="text-xs text-stone-400 text-center">
-          1 = {TENSION_LABELS[0]} · 5 = {TENSION_LABELS[4]}
+          1 = {t('tensionLow')} · 5 = {t('tensionHigh')}
         </p>
       </div>
 
       {/* Self-critical */}
       <div className="space-y-2">
-        <label className="block text-sm text-stone-600">
-          Are you being hard on yourself today?
-        </label>
+        <label className="block text-sm text-stone-600">{t('selfCriticalLabel')}</label>
         <div className="flex gap-3">
           {([false, true] as const).map(v => (
             <button
@@ -102,12 +93,10 @@ export function CheckinForm({ onSubmit, loading }: CheckinFormProps) {
               type="button"
               onClick={() => setSelfCritical(v)}
               className={`flex-1 py-2 text-sm rounded transition-colors ${
-                selfCritical === v
-                  ? 'bg-stone-700 text-white'
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                selfCritical === v ? 'bg-stone-700 text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
               }`}
             >
-              {v ? 'Yes' : 'No'}
+              {v ? t('yes') : t('no')}
             </button>
           ))}
         </div>
@@ -115,20 +104,18 @@ export function CheckinForm({ onSubmit, loading }: CheckinFormProps) {
 
       {/* Intent */}
       <div className="space-y-2">
-        <label className="block text-sm text-stone-600">What would feel most useful right now?</label>
+        <label className="block text-sm text-stone-600">{t('intentLabel')}</label>
         <div className="flex gap-2">
           {(['calming', 'grounding', 'checkin'] as SessionIntent[]).map(i => (
             <button
               key={i}
               type="button"
               onClick={() => setIntent(i)}
-              className={`flex-1 py-2 text-sm rounded transition-colors capitalize ${
-                intent === i
-                  ? 'bg-stone-700 text-white'
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              className={`flex-1 py-2 text-sm rounded transition-colors ${
+                intent === i ? 'bg-stone-700 text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
               }`}
             >
-              {i === 'checkin' ? 'Just check in' : i.charAt(0).toUpperCase() + i.slice(1)}
+              {i === 'calming' ? t('intentCalming') : i === 'grounding' ? t('intentGrounding') : t('intentCheckin')}
             </button>
           ))}
         </div>
@@ -137,26 +124,24 @@ export function CheckinForm({ onSubmit, loading }: CheckinFormProps) {
       {/* Last session */}
       <div className="space-y-2">
         <label className="block text-sm text-stone-600">
-          How did your last session go? <span className="text-stone-400">(optional)</span>
+          {t('lastSessionLabel')} <span className="text-stone-400">{t('optional')}</span>
         </label>
         <div className="flex gap-2">
           {([
-            { value: '', label: 'Skip' },
-            { value: 'relieving', label: 'Relieving' },
-            { value: 'neutral', label: 'Neutral' },
-            { value: 'pressuring', label: 'Pressuring' },
-          ] as const).map(({ value, label }) => (
+            { value: '', labelKey: 'skip' },
+            { value: 'relieving', labelKey: 'relieving' },
+            { value: 'neutral', labelKey: 'neutral' },
+            { value: 'pressuring', labelKey: 'pressuring' },
+          ] as const).map(({ value, labelKey }) => (
             <button
               key={value}
               type="button"
               onClick={() => setLastSessionOutcome(value as LastSessionOutcome | '')}
               className={`flex-1 py-2 text-xs rounded transition-colors ${
-                lastSessionOutcome === value
-                  ? 'bg-stone-700 text-white'
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                lastSessionOutcome === value ? 'bg-stone-700 text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
               }`}
             >
-              {label}
+              {t(labelKey)}
             </button>
           ))}
         </div>
@@ -165,8 +150,7 @@ export function CheckinForm({ onSubmit, loading }: CheckinFormProps) {
       {/* Free text */}
       <div className="space-y-2">
         <label className="block text-sm text-stone-600">
-          Anything else on your mind right now?{' '}
-          <span className="text-stone-400">(optional)</span>
+          {t('freeTextLabel')} <span className="text-stone-400">{t('optional')}</span>
         </label>
         <textarea
           value={freeText}
@@ -185,7 +169,7 @@ export function CheckinForm({ onSubmit, loading }: CheckinFormProps) {
         disabled={loading}
         className="w-full py-3 text-sm text-white bg-stone-700 rounded hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {loading ? 'Checking...' : 'Continue'}
+        {loading ? t('checking') : t('continue')}
       </button>
     </form>
   );
